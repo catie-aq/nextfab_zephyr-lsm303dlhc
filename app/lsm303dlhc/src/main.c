@@ -17,6 +17,30 @@ static const struct device *const accel_device = DEVICE_DT_GET(DT_NODELABEL(lsm3
 const struct gpio_dt_spec driver_enable =
 	GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), driver_enable_gpios);
 
+static int32_t read_sensor(const struct device *sensor, enum sensor_channel channel)
+{
+	struct sensor_value val[3];
+	int32_t ret = 0;
+
+	ret = sensor_sample_fetch(sensor);
+	if (ret < 0 && ret != -EBADMSG) {
+		printf("Sensor sample update error\n");
+		goto end;
+	}
+
+	ret = sensor_channel_get(sensor, channel, val);
+	if (ret < 0) {
+		printf("Cannot read sensor channels\n");
+		goto end;
+	}
+
+	printf("( x y z ) = ( %f  %f  %f )\n", sensor_value_to_double(&val[0]),
+	       sensor_value_to_double(&val[1]), sensor_value_to_double(&val[2]));
+
+end:
+	return ret;
+}
+
 int main(void)
 {
 	int ret;
@@ -45,6 +69,11 @@ int main(void)
 	LOG_INF("Accelerometer is ready!");
 
 	while (1) {
+		printf("Accelerometer data:\n");
+		if (read_sensor(accel_device, SENSOR_CHAN_ACCEL_XYZ) < 0) {
+			printf("Failed to read accelerometer data\n");
+		}
+
 		k_sleep(K_MSEC(2000));
 	}
 	return 0;
