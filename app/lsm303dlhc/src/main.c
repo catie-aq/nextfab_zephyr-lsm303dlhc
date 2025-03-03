@@ -30,11 +30,12 @@ void send_accel_data(int32_t x, int32_t y, int32_t z)
 		return;
 	}
 
-	char message[64];
-	snprintf(message, sizeof(message), "X=%d,Y=%d,Z=%d\n\r", x, y, z);
+	uint32_t timestamp = k_uptime_get_32();
+
+	char message[80];
+	snprintf(message, sizeof(message), "T=%u,X=%d,Y=%d,Z=%d\n\r", timestamp, x, y, z);
 
 	gpio_pin_set_dt(&driver_enable, 1);
-	// k_sleep(K_MSEC(10));
 
 	for (size_t i = 0; i < strlen(message); i++) {
 		uart_poll_out(uart_accel, message[i]);
