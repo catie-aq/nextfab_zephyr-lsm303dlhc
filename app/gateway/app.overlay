@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 204 CATIE
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/gpio/sixtron-header.h>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+
+/ {
+     zephyr,user {
+		de-gpios = <&sixtron_connector_2 DIO1 GPIO_ACTIVE_HIGH>;
+		re-gpios = <&sixtron_connector_2 DIO2 GPIO_ACTIVE_HIGH>;
+     };
+};
+
+&sixtron_connector_2_uart {
+	status = "okay";
+	current-speed = <115200>;
+};
